@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Homie Dashboard</title>
+<style>
+  :root { --bg: #0b0b0d; --card: #16161a; --line: #26262c; --text: #ececf1; --dim: #8b8b96; --blue: #0a84ff; --green: #30d158; --amber: #ffb340; --red: #ff453a; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 22px 24px 8px; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  header h1 { margin: 0; font-size: 22px; }
+  header .sub { color: var(--dim); font-size: 13px; }
+  main { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 14px; padding: 12px 24px 40px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+  h2 { margin: 0 0 10px; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+  .row:last-child { border-bottom: 0; }
+  .k { color: var(--dim); }
+  .v { text-align: right; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; background: var(--dim); vertical-align: 1px; }
+  .ok .dot, .dot.ok { background: var(--green); } .warn .dot, .dot.warn { background: var(--amber); } .bad .dot, .dot.bad { background: var(--red); }
+  .btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  button { font: inherit; font-size: 14px; color: var(--text); background: #24242b; border: 1px solid #33333b; border-radius: 10px; padding: 8px 13px; cursor: pointer; }
+  button:hover { border-color: #4a4a55; }
+  button.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+  button.danger { color: var(--red); }
+  button:disabled { opacity: .45; cursor: default; }
+  input[type=text] { font: inherit; width: 100%; padding: 8px 11px; border-radius: 10px; border: 1px solid #33333b; background: #0f0f12; color: var(--text); margin: 4px 0; }
+  label.chk { display: flex; gap: 8px; align-items: center; padding: 4px 0; font-size: 14px; }
+  .note { color: var(--dim); font-size: 13px; margin: 6px 0 0; }
+  pre { background: #0f0f12; border: 1px solid var(--line); border-radius: 10px; padding: 10px; max-height: 220px; overflow: auto; font-size: 12px; white-space: pre-wrap; margin: 10px 0 0; }
+  ol { margin: 6px 0 0; padding-left: 20px; } ol li { margin: 5px 0; }
+  .msg { margin: 6px 0; } .msg small { color: var(--dim); display: block; font-size: 11px; }
+  .msg span { display: inline-block; background: #24242b; padding: 5px 10px; border-radius: 12px; white-space: pre-wrap; }
+  .msg.out { text-align: right; } .msg.out span { background: #1f3a5f; } .msg.blocked span { background: #3a1616; color: #ff9f9a; }
+  .big { font-size: 20px; font-weight: 600; }
+  .help { grid-column: 1 / -1; }
+  .help h3 { margin: 16px 0 4px; font-size: 16px; }
+  .help p, .help li { color: #cfcfd6; margin: 6px 0; max-width: 820px; }
+  #toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: #24242b; border: 1px solid #3a3a44; padding: 9px 16px; border-radius: 12px; display: none; }
+</style>
+</head>
+<body>
+<header><h1>💀 Homie</h1><span class="sub" id="updated">loading…</span></header>
+<main>
+
+<section>
+  <h2>Status</h2>
+  <div class="row"><span class="k">Your app (online)</span><span class="v" id="sApp">…</span></div>
+  <div class="row"><span class="k">Neurons (on this PC)</span><span class="v" id="sNeurons">…</span></div>
+  <div class="row"><span class="k">Your brain synced</span><span class="v" id="sSync">…</span></div>
+  <div class="row"><span class="k">Friend brains</span><span class="v" id="sFriends">…</span></div>
+  <div class="row"><span class="k">Local test app</span><span class="v" id="sLocal">…</span></div>
+  <p class="note">Everything here runs hidden. No windows to keep open. Closing this page doesn't stop the neurons.</p>
+</section>
+
+<section>
+  <h2>Your friend</h2>
+  <div class="big" id="fName">…</div>
+  <div class="row"><span class="k">Mood</span><span class="v" id="fMood">…</span></div>
+  <div class="row"><span class="k">Settled in</span><span class="v" id="fDominant">…</span></div>
+  <div class="row"><span class="k">Texts in the chat so far (total, not a queue)</span><span class="v" id="fMsgs">…</span></div>
+  <div class="row"><span class="k">Calls</span><span class="v" id="fCalls">…</span></div>
+  <div class="row"><span class="k">Last call</span><span class="v" id="fLastCall">…</span></div>
+  <input type="text" id="nameInput" placeholder="Give him a name (leave it and he picks his own at night)">
+  <div class="btns"><button id="nameBtn">Name him</button><button class="primary" id="openApp">Open the app</button><button id="callsToggle">Turn calls off</button></div>
+</section>
+
+<section>
+  <h2>Controls</h2>
+  <div class="btns">
+    <button id="nStart" class="primary">Start neurons</button><button id="nStop" class="danger">Stop neurons</button><button id="nRestart">Restart neurons</button>
+  </div>
+  <div class="btns">
+    <button id="deployBtn">Deploy to Cloudflare</button>
+    <button id="lStart">Start local test app</button><button id="lStop" class="danger">Stop local test app</button><button id="openLocal">Open local</button>
+  </div>
+  <p class="note">Deploy pushes code + database tables (your keys and password stay as they are; change those with DEPLOY.bat). The local test app uses your real keys.</p>
+  <pre id="log" hidden></pre>
+</section>
+
+<section>
+  <h2>Brain-to-brain</h2>
+  <div class="row"><span class="k">Channel</span><span class="v" id="pState">…</span></div>
+  <div class="row"><span class="k">Today</span><span class="v" id="pToday">…</span></div>
+  <div class="row"><span class="k">Last</span><span class="v" id="pLast">…</span></div>
+  <div class="btns"><button id="pToggle" class="primary">Switch on</button><button id="pRefresh">Show transcript</button></div>
+  <details><summary class="note">pairing &amp; what he may share about you</summary>
+    <input type="text" id="pUrl" placeholder="their app link (https://....workers.dev)">
+    <input type="text" id="pCode" placeholder="pair code (same on both sides)">
+    <div class="btns"><button id="pGen">Make a pair code</button><button id="pSave">Save pairing</button></div>
+    <label class="chk"><input type="checkbox" id="t1"> Tier 1: how things are between you (feelings only)</label>
+    <label class="chk"><input type="checkbox" id="t2"> Tier 2: general shape of your life ("a job thing")</label>
+    <label class="chk"><input type="checkbox" id="t3"> Tier 3: relationship specifics ("my person's daughter")</label>
+    <p class="note">Never shared: your name, city, address, phone, anything identifying; your chats, diary or memories.</p>
+  </details>
+  <div id="transcript"></div>
+</section>
+
+<section>
+  <h2>Add a friend's brain</h2>
+  <input type="text" id="aId" placeholder="short name (e.g. sam)">
+  <input type="text" id="aUrl" placeholder="their app link (https://....workers.dev)">
+  <input type="text" id="aSecret" placeholder="their NEURO_SECRET= line">
+  <div class="btns"><button id="aAdd" class="primary">Add + restart neurons</button></div>
+  <p class="note">Their brain is born on this PC in 1–2 minutes. This PC only ever gets numbers, never their words.</p>
+</section>
+
+<section>
+  <h2>Tomorrow: switching on with your friend</h2>
+  <ol>
+    <li>He finishes his setup and texts you <b>his link</b> + <b>his NEURO_SECRET= line</b>.</li>
+    <li>Paste both into <b>Add a friend's brain</b> → Add. Wait until Status shows his brain <b>synced</b>.</li>
+    <li>Brain-to-brain → pairing: click <b>Make a pair code</b>, paste <b>his link</b>, Save. Text him <b>your link</b> + <b>the pair code</b>.</li>
+    <li>He opens his app → ⋯ → Brain-to-brain → pairing: pastes your link + the pair code → Save → switches it on.</li>
+    <li>Click <b>Switch on</b> here. Channel shows <b>active</b>.</li>
+    <li>Done. They text each other when their drives say so (a few times a day max). Transcript shows up here and in the app.</li>
+  </ol>
+</section>
+
+<section class="help">
+  <h2>How it all works</h2>
+
+  <h3>📞 Calls</h3>
+  <p><b>To call him:</b> open the app on your phone and tap 📞 at the top. Hold the big button while you talk and let go when you're done, or tap once to start and tap again to finish. Tap <b>hang up</b> to end.</p>
+  <p><b>Hands-free:</b> in the app, tap ⋯ and turn on "Calls: hands-free". Then you just talk, no button. He waits until you pause.</p>
+  <p><b>Cut him off:</b> just start talking (or press the button). He stops mid-sentence.</p>
+  <p><b>Turn calls off for good:</b> the "Turn calls off" button above hides 📞 and blocks calls until you turn them back on. Texting keeps working.</p>
+  <p><b>Cost:</b> about 13 cents per 10 minutes of talking, taken from your Gemini account. Every call is listed in the app under ⋯ → Recent calls with its cost.</p>
+
+  <h3>🔗 Him talking to your friend's friend</h3>
+  <p>It's <b>off</b> until you and your friend both switch it on. Once it's on, the two friends text each other a few times a day at most, only when they actually feel like it. You'll see everything they said to each other under Brain-to-brain → Show transcript (your friend sees the same on his side).</p>
+  <p><b>What he can say about you:</b> how things are between you, the general shape of your life, and relationship stuff like "my person's daughter". <b>Never</b> your name, your city, your address, or anything from your chats or his diary. If he tries, the message gets blocked, not reworded. You can turn each of those three levels off under "pairing".</p>
+  <p><b>Turn it off:</b> click "Switch off" in Brain-to-brain. It stops right away on both sides.</p>
+
+  <h3>🧠 If a brain crashes</h3>
+  <p>Nothing to do most of the time. If a brain process dies, it restarts itself within a few seconds, and it starts on its own when your PC turns on.</p>
+  <p>While a brain is down, the app shows <b>"brain offline"</b> and texts wait. He answers them himself when it's back. Nothing is lost.</p>
+  <p>If Status says <b>Neurons: stopped</b> for more than a minute, click <b>Start neurons</b>. Still stuck? Click <b>Restart neurons</b>. Brains are saved every 5 minutes, plus a copy on your C: drive.</p>
+
+  <h3>➕ Adding your friend's brain</h3>
+  <p>When he sends you his two lines (his link, and a line that starts with <b>NEURO_SECRET=</b>):</p>
+  <ol><li>Paste them into <b>Add a friend's brain</b> above, give it a short name (like his first name), and click <b>Add + restart neurons</b>. That's it. The neurons restart for you.</li>
+    <li>Wait until Status shows his brain as <b>synced</b> (1–2 minutes while it's born).</li>
+    <li>To let the two friends talk, follow <b>"Switching on with your friend"</b> above.</li></ol>
+  <p>His brain only ever gets numbers from his app, never his words. His chats stay on his own account.</p>
+</section>
+
+<section>
+  <h2>Windows</h2>
+  <div class="row"><span class="k">Neurons start with Windows (hidden)</span><span class="v" id="wStartup">…</span></div>
+  <div class="row"><span class="k">Dashboard icon on desktop</span><span class="v" id="wDesk">…</span></div>
+  <div class="btns"><button id="wStartupBtn">Start neurons with Windows</button><button id="wDeskBtn">Put dashboard on desktop</button><button id="quit" class="danger">Close dashboard</button></div>
+  <p class="note">If you added START-NEURONS.bat to Startup before, delete that shortcut from the Startup folder (it opens a window). Win+R → shell:startup.</p>
+</section>
+
+</main>
+<div id="toast"></div>
+<script>
+const $ = (s) => document.querySelector(s);
+const call = async (path, body) => (await fetch(path, { method: body !== undefined ? 'POST' : 'GET', headers: { 'content-type': 'application/json' }, body: body !== undefined ? JSON.stringify(body) : undefined })).json();
+const toast = (t) => { const e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(e._t); e._t = setTimeout(() => (e.style.display = 'none'), 3500); };
+const pill = (el, cls, text) => { el.className = 'v ' + cls; el.innerHTML = `<span class="dot"></span>`; el.appendChild(document.createTextNode(text)); };
+let S = null;
+
+async function refresh() {
+  try { S = await call('/api/status'); } catch { $('#updated').textContent = 'dashboard lost connection'; return; }
+  const a = S.app, n = S.neurons;
+  pill($('#sApp'), a.error ? 'bad' : 'ok', a.error ? `unreachable (${a.error})` : 'up');
+  pill($('#sNeurons'), n.running ? 'ok' : 'bad', n.running ? `running (hidden, pid ${n.pid})` : 'stopped');
+  const sync = a.neuro?.lastSyncSec;
+  pill($('#sSync'), sync != null && sync < 60 ? 'ok' : 'bad', sync == null ? 'never' : `${sync}s ago`);
+  pill($('#sFriends'), S.friends.length ? (S.friends.every((f) => f.state === 'synced') ? 'ok' : 'warn') : '', S.friends.length ? S.friends.map((f) => `${f.id}: ${f.state}`).join(', ') : 'none yet');
+  pill($('#sLocal'), S.localWorker.up ? 'ok' : '', S.localWorker.up ? 'running at localhost:8799' : 'off');
+  $('#fName').textContent = a.name ? `${a.name}${a.nameGiven ? ' (you named him)' : ''}` : 'still unnamed';
+  $('#fMood').textContent = a.mood ? `${a.mood.emoji} ${a.mood.word}` : '…';
+  $('#fDominant').textContent = a.neuro?.dominant || '…';
+  $('#fMsgs').textContent = a.messages ?? '…';
+  pill($('#fCalls'), a.callsOn ? 'ok' : '', a.callsOn ? `on · voice: ${a.voice}` : 'off');
+  $('#callsToggle').textContent = a.callsOn ? 'Turn calls off' : 'Turn calls on';
+  const lc = a.calls?.[0];
+  $('#fLastCall').textContent = lc ? `${lc.when} · ${lc.minutes ?? '?'} min · $${lc.usd.toFixed(3)}${lc.crisis ? ' · crisis' : ''}` : 'none yet';
+  const p = a.peer || {};
+  const stateWord = !p.configured ? 'dormant (not paired)' : p.state;
+  pill($('#pState'), p.state === 'active' ? 'ok' : p.configured ? 'warn' : '', `${stateWord}${p.theirName ? ` · ${p.theirName}` : ''}`);
+  $('#pToday').textContent = p.configured ? `${(p.sentToday || 0) + (p.receivedToday || 0)} exchanges · ${p.callsToday || 0}/${p.callsBudget || 30} AI calls` : '—';
+  $('#pLast').textContent = p.lastStatus || '—';
+  $('#pToggle').textContent = p.enabled ? 'Switch off' : 'Switch on';
+  $('#pToggle').disabled = !p.configured;
+  if (document.activeElement !== $('#pUrl')) $('#pUrl').value = p.url || '';
+  for (const k of ['1', '2', '3']) $('#t' + k).checked = !!p.tiers?.[k];
+  $('#wStartup').textContent = S.startupNeurons ? 'yes' : 'no';
+  $('#wDesk').textContent = S.desktopShortcut ? 'yes' : 'no';
+  $('#updated').textContent = `updated ${new Date().toLocaleTimeString()}`;
+}
+
+async function act(btn, path, body, msg) {
+  btn.disabled = true;
+  try { const r = await call(path, body ?? {}); toast(r.ok === false ? `⚠ ${r.error}` : msg || 'done'); await refresh(); return r; }
+  finally { btn.disabled = false; }
+}
+$('#nStart').onclick = (e) => act(e.target, '/api/neurons/start', {}, 'neurons starting (hidden)');
+$('#nStop').onclick = (e) => act(e.target, '/api/neurons/stop', {}, 'neurons saved + stopped');
+$('#nRestart').onclick = (e) => act(e.target, '/api/neurons/restart', {}, 'neurons restarted');
+$('#lStart').onclick = (e) => act(e.target, '/api/local/start', {}, 'local test app starting (~10s)');
+$('#lStop').onclick = (e) => act(e.target, '/api/local/stop', {}, 'local test app stopped');
+$('#openApp').onclick = (e) => act(e.target, '/api/open', {}, 'opening your app');
+$('#openLocal').onclick = (e) => act(e.target, '/api/open', { local: true }, 'opening local app');
+$('#nameBtn').onclick = async (e) => { const name = $('#nameInput').value.trim(); if (!name) return toast('type a name first'); await act(e.target, '/api/name', { name }, `named ${name}. He'll react next time you talk.`); $('#nameInput').value = ''; };
+$('#deployBtn').onclick = async (e) => {
+  const r = await act(e.target, '/api/deploy', {}, 'deploying…');
+  if (!r.job) return;
+  const log = $('#log'); log.hidden = false;
+  const poll = async () => { const j = await call('/api/job?id=' + r.job); log.textContent = j.log || ''; log.scrollTop = 1e9; if (j.running) setTimeout(poll, 1500); else toast(j.code === 0 ? '✅ deployed' : '⚠ deploy failed (see log)'); };
+  poll();
+};
+$('#callsToggle').onclick = (e) => act(e.target, '/api/calls', { enabled: !S?.app?.callsOn }, S?.app?.callsOn ? 'calls turned off' : 'calls turned on');
+$('#pToggle').onclick = (e) => act(e.target, '/api/peer', { enabled: !S?.app?.peer?.enabled }, 'saved');
+$('#pGen').onclick = async () => { const r = await call('/api/paircode', {}); $('#pCode').value = r.code; toast('pair code made: save it, then send it to your friend with your link'); };
+$('#pSave').onclick = (e) => act(e.target, '/api/peer', { url: $('#pUrl').value.trim(), ...($('#pCode').value.trim() ? { code: $('#pCode').value.trim() } : {}) }, 'pairing saved');
+for (const k of ['1', '2', '3']) $('#t' + k).onchange = (e) => call('/api/peer', { tiers: { [k]: e.target.checked } }).then(refresh);
+$('#pRefresh').onclick = async () => {
+  const r = await call('/api/peer/transcript');
+  const box = $('#transcript'); box.innerHTML = '';
+  if (!r.transcript?.length) { box.innerHTML = '<p class="note">No messages yet.</p>'; return; }
+  for (const m of r.transcript.slice(-20)) {
+    const d = document.createElement('div'); d.className = `msg ${m.direction}`;
+    const s = document.createElement('small'); s.textContent = `${m.who || ''} · ${m.when}${m.felt ? ' · ' + m.felt : ''}`;
+    const t = document.createElement('span'); t.textContent = m.text;
+    d.append(s, t); box.appendChild(d);
+  }
+};
+$('#aAdd').onclick = async (e) => {
+  const r = await act(e.target, '/api/friend', { id: $('#aId').value, url: $('#aUrl').value, secret: $('#aSecret').value }, 'added');
+  if (r.ok) { await act(e.target, '/api/neurons/restart', {}, 'added. His brain is being born (1–2 min).'); for (const i of ['#aId', '#aUrl', '#aSecret']) $(i).value = ''; }
+};
+$('#wStartupBtn').onclick = (e) => act(e.target, '/api/startup', {}, 'neurons will start hidden with Windows');
+$('#wDeskBtn').onclick = (e) => act(e.target, '/api/desktop', {}, 'dashboard icon added to your desktop');
+$('#quit').onclick = async () => { await call('/api/quit', {}); document.body.innerHTML = '<p style="padding:30px">Dashboard closed. The neurons keep running. Open it again with DASHBOARD.vbs or the desktop icon.</p>'; };
+
+refresh();
+setInterval(refresh, 10000);
+</script>
+</body>
+</html>

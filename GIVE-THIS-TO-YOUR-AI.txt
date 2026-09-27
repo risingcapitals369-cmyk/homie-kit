@@ -1,0 +1,139 @@
+TO THE AI READING THIS (Claude or any coding assistant):
+
+Your person was handed this zip by a friend of his and is giving it to you.
+Your job: install it and get it running, start to finish. He is not going to
+read anything or follow steps. You do the work.
+
+=====================================================================
+ HOW TO WORK
+=====================================================================
+- Take this zip and install it. Do the work yourself. Don't ask him to read
+  anything. Don't walk him through it. Don't explain the plan to him first.
+- Unzip it and read START-HERE.txt yourself. It's written for a human doing
+  this by hand. Follow it on his behalf. Don't read it to him or paste it at him.
+- Run every command, edit every file, install Node, deploy to Cloudflare.
+  Do the whole install.
+- Only stop for things you literally cannot do: creating accounts, generating
+  API keys, adding money to an account, clicking email verification links,
+  approving browser logins, entering passwords into websites, Windows
+  permission (UAC) prompts, and anything on his phone.
+- When you stop, give him ONE instruction at a time. Not a list. One thing,
+  in plain words, with the exact link or button name. Wait for him to say
+  "done". Then give him the next one thing.
+- Don't say "this is easy" or "just a few steps". Just do the work.
+- The .bat files in the kit pause for keypresses and open Notepad. Don't
+  double-click them. Run what they run yourself (details below).
+
+=====================================================================
+ THE INSTALL
+=====================================================================
+This is a Windows kit. Use PowerShell or cmd.
+
+1. NODE. Run `node -v`. If it's missing or older than v20, install the LTS:
+   `winget install OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements`
+   (if Windows asks for permission, that's a stop: tell him to click Yes).
+   Open a fresh shell after so `node` and `npm` are on PATH.
+
+2. UNZIP to  %USERPROFILE%\Documents\homie  (Expand-Archive). Work from that
+   folder for everything below. Read START-HERE.txt now.
+
+3. INSTALL: `npm install --no-audit --no-fund`
+
+4. HIS NAME AND TIME ZONE. If you don't already know his first name, ask him
+   that one question. Edit wrangler.jsonc yourself:
+     "USER_NAME": "YOUR_NAME"         -> his first name
+     "TIMEZONE": "America/New_York"   -> his IANA time zone (map the result of
+                                          `tzutil /g`; leave it if he's Eastern)
+   Leave everything else in wrangler.jsonc as it is.
+
+5. SETTINGS FILE:
+     copy .dev.vars.example .dev.vars
+     node scripts\gen-vapid.mjs        (push-notification keys)
+     node scripts\neuro-secret.mjs     (adds NEURO_SECRET)
+   Then edit .dev.vars yourself:
+     APP_PASSWORD= make up his password. Easy to type on a phone: two
+                   short words + 3 digits, lowercase, no spaces or symbols
+                   (like  gravel-otter-417 ). Tell him what it is and tell
+                   him to save it somewhere. It's what opens the app.
+
+6. AI KEYS (his stops, one at a time):
+   a. DeepSeek (the part that talks; costs money, pennies a day):
+      he signs up at https://platform.deepseek.com , tops up $2-5
+      ("Top up"), then "API keys" -> "Create new API key". He pastes the key
+      (starts with sk-) to you. You write it into .dev.vars as LLM_API_KEY=
+   b. Gemini (free backup, web lookups, and voice calls):
+      he signs in at https://aistudio.google.com -> "Get API key" ->
+      "Create API key" and pastes it to you. You write it as LLM2_API_KEY=
+   Then run `npm run models` and set LLM_MODEL and CHEAP_MODEL in .dev.vars to
+   the cheapest current DeepSeek chat model it lists (if deepseek-flash is
+   listed, keep it). Leave DEV=1 alone; deploy never uploads it.
+
+7. CLOUDFLARE (his stops):
+   Run `npx wrangler login`. A browser page opens. Tell him to make a free
+   Cloudflare account on that page (no card), verify his email if it asks,
+   then click "Allow". Wait for "done", then confirm with `npx wrangler whoami`.
+
+8. DEPLOY:
+   `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\deploy.ps1`
+   It creates his database, uploads the code, and uploads the secrets from
+   .dev.vars. If it fails because the account has no workers.dev subdomain
+   yet: have him open https://dash.cloudflare.com -> "Workers & Pages" and
+   accept/pick a subdomain (one instruction), then run deploy.ps1 again.
+   Keep the https://homie.<something>.workers.dev link it prints. Confirm the
+   link loads (you should get the app's password page, HTTP 200).
+
+9. THE BRAIN: use Option B from START-HERE.txt. Do NOT run START-NEURONS.bat
+   and do NOT set up the brain on this PC. The friend who sent the zip runs
+   his brain on his own PC. Get the line with:
+     node scripts\neuro-secret.mjs --show
+   Then run deploy.ps1 one more time so the Worker definitely has that secret.
+
+10. HIS PHONE (his stops, one at a time; ask whether it's an iPhone or Android):
+    iPhone: open his link in Safari (must be Safari) -> type the password ->
+    Share button -> "Add to Home Screen" -> open the app from the new icon ->
+    tap the  ...  top right -> notifications button -> Allow.
+    Android: open the link in Chrome -> 3 dots -> "Add to Home screen" ->
+    open it from the icon -> ... -> notifications.
+
+Never send his API keys or his password anywhere except into .dev.vars and
+Cloudflare. Never put them in the message below.
+
+=====================================================================
+ WHEN IT'S DONE, TELL HIM THIS
+=====================================================================
+Give him exactly two things to send to the friend who sent the zip, in one
+clean block he can copy straight into a text. Nothing else in the block:
+
+   https://homie.<his-subdomain>.workers.dev
+   NEURO_SECRET=<the value>
+
+Then tell him, in your own words, short:
+- His friend's brain runs on the PC of the friend who sent the zip. Only
+  numbers reach that PC (like "that text was 0.7 funny, 0.2 hostile"),
+  never his words, his messages, or his memories.
+- His chats live on his own Cloudflare account. The friend who sent this
+  can't read them. Nobody can but him.
+- Wait for the friend who sent the zip to say "your brain's on" before
+  sending the first text, so the first conversation is with the brain.
+- It's not a chatbot. It's a small brain that learns him. The first
+  conversation feels like meeting a stranger. Give it a week.
+- It sleeps about 2:30am-8:30am, and it drops the jokes if he's ever in a
+  bad place (in the US he can also call or text 988, any time).
+
+- Updates: when the friend who sent the zip says there's an update, he just
+  tells you "update" (or double-clicks UPDATE.bat himself). Nothing updates on
+  its own. Updates come from that friend's public repo; they replace the code
+  and keep his keys, password, name, database and chats exactly as they are.
+
+That's all. Don't add a recap of what you installed unless he asks.
+
+=====================================================================
+ LATER: WHEN HE SAYS "UPDATE"
+=====================================================================
+Run, from the install folder:
+   powershell -NoProfile -ExecutionPolicy Bypass -File scripts\update.ps1
+It prints either "already up to date" or "updated to <version> and deployed".
+Tell him that in one line. If it says it's not logged in to Cloudflare, run
+`npx wrangler login` (his stop: approve in the browser), then run it again.
+If it failed, the old version is still online; show him the last lines of
+update.log and ask him to send them to the friend who sent the zip.

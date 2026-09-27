@@ -1,0 +1,33 @@
+{
+  "name": "homie",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-01",
+  "assets": { "directory": "./public" },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "homie",
+      // Local dev works with this placeholder. Before deploying, run
+      // `npx wrangler d1 create homie` and paste the id it prints here.
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ],
+  // The heartbeat: every 5 min time passes for it (mood decay, drives, sleep),
+  // it answers texts it was sitting on, maybe texts you first, reflects at 4am.
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "vars": {
+    // Leave empty and it picks its own name. Set it to force one.
+    "FRIEND_NAME": "",
+    "FRIEND_EMOJI": "💀",
+    "USER_NAME": "YOUR_NAME",
+    "TIMEZONE": "America/New_York",
+    "QUIET_START": "23",
+    "QUIET_END": "9",
+    // "0" = no web: curiosity still acts, it just ponders. (Your one-week test.)
+    "SEARCH_ENABLED": "1",
+    // Live calls: the voice he speaks with (placeholder until picked) and the model.
+    "CALLS_ENABLED": "1",     // master switch; the dashboard can also turn calls off/on without a deploy
+    "VOICE_NAME": "Algenib",  // his voice (picked 2026-09-26). Regenerate fillers if changed: node voice/fillers.mjs <Voice>
+    "LIVE_MODEL": "gemini-3.8-live"
+  }
+}

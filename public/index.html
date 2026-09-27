@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="">
+<link rel="manifest" href="/api/manifest">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="icon" href="/icon-192.png">
+<title>Messages</title>
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+
+<div id="login" class="screen" hidden>
+  <form id="loginForm">
+    <div class="avatar big">💀</div>
+    <input id="pw" type="password" placeholder="password" autocomplete="current-password" autofocus>
+    <button>Open</button>
+    <p id="loginErr" class="err"></p>
+  </form>
+</div>
+
+<div id="app" class="screen" hidden>
+  <header>
+    <div class="avatar" id="avatar"></div>
+    <div class="who"><span id="name"></span><small id="status"></small></div>
+    <button id="callBtn" class="icon" aria-label="Call" hidden>📞</button>
+    <button id="menuBtn" class="icon" aria-label="Settings">⋯</button>
+  </header>
+
+  <main id="thread"></main>
+
+  <form id="composer">
+    <button type="button" id="micBtn" class="icon round" aria-label="Talk">🎙</button>
+    <textarea id="input" rows="1" placeholder="Text Message" enterkeyhint="send"></textarea>
+    <button id="sendBtn" class="send" aria-label="Send">↑</button>
+  </form>
+</div>
+
+<div id="sheet" class="sheet" hidden>
+  <div class="sheet-body">
+    <div class="sheet-head"><b>Settings</b><button id="closeSheet" class="icon">✕</button></div>
+
+    <button id="pushBtn" class="row">🔔 Let him text you first (notifications)</button>
+    <p id="pushNote" class="note"></p>
+    <label class="row"><input type="checkbox" id="speak"> 🔊 Read his texts out loud</label>
+    <label class="row"><input type="checkbox" id="handsfreeSetting"> 📞 Calls: hands-free (no button; it hears when you talk)</label>
+    <div id="callLog"></div>
+
+    <h4>How he's feeling</h4>
+    <p id="feeling" class="note"></p>
+
+    <h4>What's still on his mind</h4>
+    <ul id="episodes"></ul>
+
+    <h4>What he's been curious about</h4>
+    <p id="searchNote" class="note"></p>
+    <ul id="wonders"></ul>
+
+    <h4>Brain-to-brain</h4>
+    <p id="peerStatus" class="note"></p>
+    <button id="peerToggle" class="row">🔗 Let him talk to the other friend</button>
+    <details class="hood" id="peerSetup"><summary>pairing &amp; what he may share about you</summary>
+      <input id="peerUrl" class="field" placeholder="their app link (https://....workers.dev)">
+      <input id="peerCode" class="field" placeholder="pair code (same on both sides)">
+      <button id="peerSave" class="row">Save pairing</button>
+      <label class="row"><input type="checkbox" id="tier1"> Tier 1: how things are between you (feelings, no facts)</label>
+      <label class="row"><input type="checkbox" id="tier2"> Tier 2: the general shape of your life ("a job thing")</label>
+      <label class="row"><input type="checkbox" id="tier3"> Tier 3: specific relationship facts ("my person's daughter")</label>
+      <p class="note">Never shared at any tier: your name, city, address, phone, or anything that identifies you; your chats, diary or memories.</p>
+    </details>
+    <div id="peerLog"></div>
+
+    <h4>His diary</h4>
+    <div id="journal"></div>
+    <p id="self" class="note"></p>
+
+    <h4>What he knows about you</h4>
+    <p id="summary" class="note"></p>
+    <ul id="facts"></ul>
+    <h4>Stuff he's gonna check on</h4>
+    <ul id="followups"></ul>
+    <button id="memNow" class="row">🧠 Update memory now</button>
+
+    <details class="hood"><summary>under the hood</summary><pre id="hood"></pre></details>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+<script src="/call.js"></script>
+</body>
+</html>

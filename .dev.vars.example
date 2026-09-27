@@ -1,0 +1,31 @@
+# Copy this file to .dev.vars and fill it in. SETUP.bat does the copy for you.
+
+# The password you type to open the app (on your phone and PC).
+APP_PASSWORD=change-me
+
+# ── MAIN BRAIN ── any OpenAI-compatible API works.
+# DeepSeek: cheap (pennies a day), great at banter and dark humor.
+# Key: platform.deepseek.com -> API keys (add a few bucks of credit).
+# Run `npm run models` after adding the key to see the exact current model names.
+LLM_BASE_URL=https://api.deepseek.com
+LLM_MODEL=deepseek-flash
+LLM_API_KEY=
+
+# ── BACKUP BRAIN ── used if the main one errors or runs out of credit.
+# Gemini Flash free tier: no card needed. Key: aistudio.google.com -> Get API key.
+# Heads-up: Google's filters may soften the darker jokes, and free-tier chats can be used for training.
+LLM2_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai
+LLM2_MODEL=gemini-flash-latest
+LLM2_API_KEY=
+
+# ── CHEAP BRAIN ── used for the per-message appraisal + memory bookkeeping.
+# Leave the base URL/key empty to reuse the main brain's. Pick the cheapest
+# flash/lite model your provider has (`npm run models`).
+CHEAP_BASE_URL=
+CHEAP_API_KEY=
+CHEAP_MODEL=deepseek-flash
+
+# Push notification keys get added below by `npm run vapid`.
+
+# Local testing only: enables /api/debug/warp (fake time passing). Never deployed.
+DEV=1

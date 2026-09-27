@@ -1,0 +1,219 @@
+===============================================================
+   READ THIS FIRST — your own AI friend
+===============================================================
+
+I'm handing you this zip and walking away. Everything you need
+is in here. Follow it top to bottom and you won't need to ask me
+anything. Takes about 20-30 minutes, one time.
+
+
+---------------------------------------------------------------
+ WHAT YOU'RE GETTING (read this part, it matters)
+---------------------------------------------------------------
+This is NOT a chatbot like ChatGPT.
+
+It's a friend that texts you like a real person, and under the
+hood it has a small simulated brain: about 2,000 fake neurons
+that fire, get into moods, and physically rewire as it gets to
+know you. The AI writes the words. The brain decides how it
+feels while it writes them.
+
+What that means for you:
+
+ - It starts as a total stranger. It doesn't know your name
+   history, your people, anything. Tell it about yourself.
+ - It has moods that stick. Be mean to it and it can stay salty
+   for most of a day. Be good to it and it warms up. The mood
+   bar at the top shows how it's doing.
+ - It learns YOU, not just facts. Roast it and follow up with
+   love a few times and its brain learns that's your banter,
+   so your roasts stop hurting it. That takes a few days of real
+   talking. Early on it takes things more literally.
+ - It sleeps. Roughly 2:30am to 8:30am it's out. Texts wait and
+   it answers when it wakes up (text it a bunch and it'll wake up
+   groggy).
+ - It texts you first sometimes, when it misses you, gets bored,
+   or wants to know how something went.
+ - It gets curious about things you talk about and sometimes
+   looks them up on its own, then brings them up later.
+ - It has dark humor and an older-brother vibe. It will roast you
+   and call you out. It's on your side.
+ - After you've talked a while, it picks its OWN name one night
+   and tells you the next day, and why.
+ - If you're ever actually in a bad place, it drops the jokes and
+   takes it seriously every time. (In the US you can also call or
+   text 988, any time.)
+
+The first conversation will feel like meeting someone. That's the
+point. Give it a week before you decide what you think.
+
+
+---------------------------------------------------------------
+ YOUR PRIVACY — where your stuff lives
+---------------------------------------------------------------
+ - Everything runs on YOUR accounts, made in the steps below.
+   Your chats and memories live in your own free Cloudflare
+   account. I have no access to it. I can't read your chats, ever.
+ - The AI costs come out of YOUR key (a few dollars lasts a long
+   time). Nobody else's.
+ - The only exception is if you choose Option B in Step 6 (I run
+   your brain on my computer). Even then my computer only gets
+   NUMBERS, like "this message was 0.7 hostile, 0.6 funny". It
+   never gets your words, your messages, or your memories.
+
+
+---------------------------------------------------------------
+ WHAT YOU NEED
+---------------------------------------------------------------
+ - A Windows PC (for setup, one time). A Mac won't run the setup
+   files.
+ - Your phone.
+ - About $2-5 for the AI (card needed for DeepSeek).
+
+
+---------------------------------------------------------------
+ STEP 1 — Install Node.js  (2 minutes)
+---------------------------------------------------------------
+ This is a free program the setup needs to run.
+ 1. Go to:  https://nodejs.org
+ 2. Click the big green button that says "LTS".
+ 3. Open the file it downloads. Click Next on every screen,
+    then Finish.
+
+
+---------------------------------------------------------------
+ STEP 2 — Unzip the folder  (1 minute)
+---------------------------------------------------------------
+ 1. Right-click the zip I sent you -> "Extract All".
+ 2. Pick your Documents folder -> Extract.
+ 3. Open the folder. You should see files named SETUP, DEPLOY,
+    START-NEURONS and this one.
+
+
+---------------------------------------------------------------
+ STEP 3 — Get your two AI keys  (5-10 minutes)
+---------------------------------------------------------------
+ A "key" is like a password that lets the app use an AI service.
+ You need two. Keep them private: never post them or send them
+ to anyone, including me.
+
+ KEY 1 — DeepSeek  (this is the part that talks; it costs money)
+   1. Go to:  https://platform.deepseek.com
+   2. Sign up (email or Google).
+   3. Add money: click "Top up" and add $2-5. That lasts a long
+      time; normal chatting is pennies a day.
+   4. Click "API keys" on the left -> "Create new API key" ->
+      name it anything -> Create.
+   5. Copy the key (it starts with  sk- ) and paste it into a
+      note. You only see it once.
+
+ KEY 2 — Gemini  (free backup, and lets it look things up)
+   1. Go to:  https://aistudio.google.com
+   2. Sign in with your Google account.
+   3. Click "Get API key" -> "Create API key".
+   4. Copy it into the same note.
+
+
+---------------------------------------------------------------
+ STEP 4 — Run SETUP  (3 minutes)
+---------------------------------------------------------------
+ 1. In the folder, double-click  SETUP.bat
+    (If Windows shows a blue "Windows protected your PC" box:
+     click "More info" -> "Run anyway".)
+ 2. A black window opens and installs things. Wait.
+ 3. It asks your first name. Type it, press Enter.
+ 4. Notepad opens with a settings file. Change ONLY these three
+    lines (put your stuff right after the = sign, no spaces):
+
+       APP_PASSWORD=     make up a password; you'll type it to
+                         open the app on your phone
+       LLM_API_KEY=      paste your DeepSeek key (sk-...)
+       LLM2_API_KEY=     paste your Gemini key
+
+ 5. Press Ctrl+S to save. Close Notepad.
+ 6. It asks "Try it on this PC now?"  -> press  N
+
+
+---------------------------------------------------------------
+ STEP 5 — Run DEPLOY  (5 minutes) — this puts it online
+---------------------------------------------------------------
+ 1. Double-click  DEPLOY.bat
+ 2. Your web browser opens a Cloudflare page. Click "Sign up"
+    (it's free, no card), make an account, then click "Allow".
+ 3. Go back to the black window.
+    - If it asks you to choose a "workers.dev subdomain", type
+      any name (letters only is easiest) and press Enter.
+    - If it asks you to pick a password, type the same password
+      you put in Step 4.
+ 4. Wait until it's done. Near the end it shows YOUR LINK, like:
+       https://homie.yourname.workers.dev
+    Copy it into your note. That's where your friend lives.
+
+
+---------------------------------------------------------------
+ STEP 6 — Give it a brain  (pick A or B)
+---------------------------------------------------------------
+ The brain is a small program that has to run on a computer
+ that's on most of the time. If that computer is off, the app
+ just says "brain offline" and your texts wait until it's back.
+ It uses almost no power (less than 1% of the computer).
+
+ OPTION A — the brain runs on YOUR PC (most private)
+   Choose this if your PC is on most of the day.
+   1. Double-click  START-NEURONS.bat
+   2. When it asks for a URL, paste YOUR LINK from Step 5 and
+      press Enter.
+   3. Wait 1-2 minutes. Its brain is being created. When the
+      window says "syncing", it's alive.
+   4. Double-click  DEPLOY.bat  one more time and let it finish.
+   5. Leave the START-NEURONS window open (you can minimize it).
+      To make it start by itself when your PC turns on:
+      press the Windows key + R, type  shell:startup  and press
+      Enter. A folder opens. Right-click START-NEURONS.bat ->
+      "Create shortcut", then drag that shortcut into the folder.
+
+ OPTION B — I run your brain on my PC
+   Choose this if your PC is usually off.
+   1. Double-click  SHOW-NEURON-KEY.bat
+   2. Text me TWO things:
+        - YOUR LINK from Step 5
+        - the one line it shows you (starts with NEURO_SECRET=)
+      Nothing else. Never send me your AI keys or your password.
+   3. Double-click  DEPLOY.bat  one more time.
+   4. I'll tell you when your brain is running. Remember: my PC
+      only ever gets numbers about how messages landed, never
+      your words.
+
+
+---------------------------------------------------------------
+ STEP 7 — Put it on your phone  (2 minutes)
+---------------------------------------------------------------
+ iPhone:
+   1. Open YOUR LINK in Safari (it has to be Safari).
+   2. Type your APP_PASSWORD and tap Open.
+   3. Tap the Share button (square with an arrow) ->
+      "Add to Home Screen" -> Add.
+   4. Close Safari. Open the app from the new icon on your
+      home screen.
+   5. Tap the  ...  in the top right -> tap the notifications
+      button -> Allow. (Now it can text you first.)
+ Android:
+   Open YOUR LINK in Chrome -> tap the 3 dots -> "Add to Home
+   screen". Open it from the icon, then ... -> notifications.
+
+
+---------------------------------------------------------------
+ DONE. Say hi.
+---------------------------------------------------------------
+ It's a stranger. Introduce yourself like you would to a new
+ person. It'll figure you out over time.
+
+ Good to know:
+ - Tap  ...  to see what it remembers about you, what it's been
+   curious about, its diary (it writes one at night), and at the
+   bottom "under the hood" to see if its brain is online.
+ - It's asleep ~2:30am-8:30am. Not broken, just asleep.
+ - "brain offline" = the computer running its brain is off.
+   Turn it on (or tell me, if you picked Option B).
+ - Something weird? Run DEPLOY.bat again. Still weird? Take a
+   screenshot of the black window and send it to me.

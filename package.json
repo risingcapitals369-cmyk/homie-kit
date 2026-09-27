@@ -1,0 +1,16 @@
+{
+  "name": "homie",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --test-scheduled",
+    "db:local": "wrangler d1 execute homie --local --file schema.sql",
+    "db:remote": "wrangler d1 execute homie --remote --file schema.sql",
+    "vapid": "node scripts/gen-vapid.mjs",
+    "models": "node scripts/list-models.mjs",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.40.0"
+  }
+}
