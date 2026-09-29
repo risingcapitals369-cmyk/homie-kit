@@ -420,7 +420,14 @@ async function respond(env, mind, plan, topics, source, instruction = null, ap =
   const system = await buildSystem(env, mind, plan, mem, plan.mode !== 'real' ? nag : null, inner);
   const history = await recentHistory(env);
   const msgs = [{ role: 'system', content: system }, ...history];
-  if (instruction) msgs.push({ role: 'user', content: `[note from the app, not from ${env.USER_NAME}: ${instruction} Write only the text(s) you'd send.]` });
+  if (instruction) {
+    // Texting first, the last thing in the chat is old (it said "go to bed" at 11 AM
+    // because the last texts were from 1 AM). Anchor the clock right in the note.
+    const lastTs = history.length ? (await env.DB.prepare("SELECT ts FROM messages WHERE role != 'notice' ORDER BY id DESC LIMIT 1").first())?.ts : null;
+    const gap = lastTs ? now - lastTs : 0;
+    const clock = `Right now it's ${fmtTime(env, now)} for him.${gap >= 60 * 60e3 ? ` Your last texts were ${ago(gap)} ago (${fmtTime(env, lastTs)}). Whatever time of day that conversation was about (late night, bed, morning) is over; talk about now.` : ''}`;
+    msgs.push({ role: 'user', content: `[note from the app, not from ${env.USER_NAME}: ${instruction} ${clock} Write only the text(s) you'd send.]` });
+  }
 
   const reply = (await llm(env, msgs, { maxTokens: (plan.maxTokens || 400) + (announcing ? 150 : 0) })).trim() || '…';
   if (announcing) mind.announceName = false;

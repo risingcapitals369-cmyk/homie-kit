@@ -356,12 +356,32 @@ async function setupPushNote() {
   if (!('PushManager' in window)) { note.textContent = "This browser can't do notifications."; return; }
   note.textContent = Notification.permission === 'granted' ? 'On ✅' : '';
 }
+// A registration whose worker isn't active (still installing, or a stale one that was
+// replaced) makes subscribe() fail with "no active Service Worker". Wait for it for real.
+async function activeRegistration() {
+  const reg = await navigator.serviceWorker.register('/sw.js');
+  const w = reg.active || reg.waiting || reg.installing;
+  if (!reg.active && w) {
+    await new Promise((ok) => { const done = () => { if (w.state === 'activated') ok(); }; w.addEventListener('statechange', done); done(); setTimeout(ok, 8000); });
+  }
+  return reg;
+}
+async function subscribePush(reg) {
+  return (await reg.pushManager.getSubscription()) ||
+    (await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(me.pushKey) }));
+}
 $('#pushBtn').onclick = async () => {
   try {
-    const reg = await navigator.serviceWorker.ready;
     if ((await Notification.requestPermission()) !== 'granted') { $('#pushNote').textContent = 'Blocked. Allow notifications in your browser settings.'; return; }
-    const sub = (await reg.pushManager.getSubscription()) ||
-      (await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64ToBytes(me.pushKey) }));
+    $('#pushNote').textContent = 'Turning on…';
+    let reg = await activeRegistration(), sub;
+    try { sub = await subscribePush(reg); }
+    catch (e) {
+      if (!/service worker/i.test(e.message)) throw e;
+      await reg.unregister();                       // stale worker: start clean once
+      reg = await activeRegistration();
+      sub = await subscribePush(reg);
+    }
     await api('/api/push/subscribe', { method: 'POST', body: JSON.stringify(sub) });
     $('#pushNote').textContent = 'On ✅ He can text you first now.';
   } catch (e) { $('#pushNote').textContent = 'Failed: ' + e.message; }
